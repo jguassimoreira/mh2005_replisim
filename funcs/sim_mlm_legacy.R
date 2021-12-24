@@ -19,7 +19,7 @@ sim_mlm_legacy = function(N_l2, n_l1, icc, sigma2, xdat, zdat) {
   
   rfx = sim_rfx_legacy(N_l2, c(0,0), varComp) #use variance components to simulate random effects
   
-  dat = agument_dat_legacy(n_l1, N_l2, xdat, zdat) #augment predictor design matrix (i.e., repeat observations if sample size combo isn't the smallest)
+  dat = augment_dat_legacy(n_l1, N_l2, xdat, zdat) #augment predictor design matrix (i.e., repeat observations if sample size combo isn't the smallest)
   
   dat$xz = dat$x * dat$z # compute cross product for interaction term 
   
@@ -35,7 +35,7 @@ sim_mlm_legacy = function(N_l2, n_l1, icc, sigma2, xdat, zdat) {
   
   dat$y = ymn + l1errors #add y to the data frame as sum of expected Y given predictors&random fx + l1 error
   
-  mod = lmer(y ~ x + z + x*z + (1+x|subID), data = dat, REML = T) #run the multilevel model with REML (as specified by M&H)
+  mod = lmerTest::lmer(y ~ x + z + x*z + (1+x|subID), data = dat, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4))) #run the multilevel model with REML (as specified by M&H)
   
   #now it's time to extract the stuff we need and return it in a list
   
@@ -47,7 +47,7 @@ sim_mlm_legacy = function(N_l2, n_l1, icc, sigma2, xdat, zdat) {
   modsigma2 = (mod@sigma)^2 #extract estimated sigma, square it
   
   #the last we'll pull out is the icc of the x variable, to better understand consequences of M&H's predictor generation scheme 
-  xiccmod = lmer(x ~ 1 + (1|subID), data = dat, REML = T) #run empty model with x variable as the DV
+  xiccmod = lmerTest::lmer(x ~ 1 + (1|subID), data = dat, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4))) #run empty model with x variable as the DV
   xicc = lme4::VarCorr(xiccmod)[[1]][1] / (lme4::VarCorr(xiccmod)[[1]][1] + xiccmod@sigma^2) #pull out ICC
   
   return(list(fx, modsigma2, varcomp, xicc)) #return these items as a list
