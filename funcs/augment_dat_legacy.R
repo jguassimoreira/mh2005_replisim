@@ -27,7 +27,7 @@ augment_dat_legacy = function(n_l1, N_l2, xdat, zdat){
     #one consequence of this approach is that, at this point, there are essentially 6 or 10 duplicates
     #of each original level 1 variable per level 2 unit 
     
-  } else {
+  } else { #l1 sample size has to be 5, 30, or 50, as specified by M&H2005
     
     dat = data.frame(subID = xdat$subID, x = xdat$x)
   }
