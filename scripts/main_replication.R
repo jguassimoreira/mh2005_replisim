@@ -23,6 +23,7 @@ scriptPath = file.path(sprintf("%s", studyPath), "funcs") #path to helper funcs
 file.sources = Sys.glob(file.path(sprintf("%s", scriptPath), "*.R")) #Construct paths to helper funcs, save in vector
 invisible(sapply(file.sources,FUN=source)) #use sapply to source each file path in the helper func vector
 datPath = file.path(sprintf("%s", studyPath), "data") #path where we'll eventually save our data
+vcov.default = function(object,...) object$vcov #temp
 
 #########
 ## Define the simulation conditions
@@ -53,17 +54,18 @@ for (i in 1:dim(sim_conds)[1]) { #loop over the simulations
   outList = list() #initialize empty list to hold output
   
   for (r in 1:1000) { #1000 replications per condition, as specified by M&H, pg 89
-    outList[r] = sim_mlm_legacy(N_l2 = sim_conds[i, 'ngroups'], #simulate data, save output
+    outList[[r]] = sim_mlm_legacy(N_l2 = sim_conds[i, 'ngroups'], #simulate data, save output
                  n_l1 = sim_conds[i, 'groupsize'],
                  icc = sim_conds[i, 'icc'],
                  sigma2 = 1,
                  xdat = xdat, 
                  zdat = zdat)
+    names(outList[[r]]) = c('fx_coefs', 'varComp', 'confInt', 'xicc')
     
     if((r / 100) == round(r / 100)) {print(sprintf('completed iteration %s', r))} #notify us of the sims progress every hundred reps
     
   }
   
-  saveRDS(outList, file = sprint('%s/icc%s_ngrps%s_grpsize%s', datPath, sim_conds[i,'icc']*10, sim_conds[i,'ngroups'], sim_conds[i,'groupsize']))
+  saveRDS(outList, file = sprintf('%s/icc%s_ngrps%s_grpsize%s', datPath, sim_conds[i,'icc']*10, sim_conds[i,'ngroups'], sim_conds[i,'groupsize']))
   
 }

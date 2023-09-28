@@ -39,18 +39,17 @@ sim_mlm_legacy = function(N_l2, n_l1, icc, sigma2, xdat, zdat) {
   
   #now it's time to extract the stuff we need and return it in a list
   
-  vc = lme4::VarCorr(mod)#extract estimated tau matrix from model
-  varcomp = c(vc[[1]][1], vc[[1]][2], vc[[1]][3], vc[[1]][4])
+  varcomp = data.frame(lme4::VarCorr(mod)) #save the variance components
+  #conf_ints = lme4::confint.merMod(mod, method ="profile", oldNames = F, quiet = T) #get the confidence intervals for all the model parameters
+  conf_ints = compute_wald_ci_varcomp(mod)
   
   fx = coef(summary(mod)) #extract estimated fixed effects
-  
-  modsigma2 = (mod@sigma)^2 #extract estimated sigma, square it
   
   #the last we'll pull out is the icc of the x variable, to better understand consequences of M&H's predictor generation scheme 
   xiccmod = lmerTest::lmer(x ~ 1 + (1|subID), data = dat, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4))) #run empty model with x variable as the DV
   xicc = lme4::VarCorr(xiccmod)[[1]][1] / (lme4::VarCorr(xiccmod)[[1]][1] + xiccmod@sigma^2) #pull out ICC
   
-  return(list(fx, modsigma2, varcomp, xicc)) #return these items as a list
+  return(list(fx, varcomp, conf_ints, xicc)) #return these items as a list
   
 }
 
