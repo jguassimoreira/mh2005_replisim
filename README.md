@@ -12,3 +12,4 @@ Replication and extension of Maas & Hox's (2005) seminal paper on sample sizes f
 
 The 'litsearch' spreadsheet contains the results of a literature review of 50 recently published empirical papers citing the original Maas & Hox simulation study. We examined why they were citing the original study and the multilevel modeling specifications used in their own study.  
 
+'SuppTable1.xlsx' is a copy of Supplementary Table 1; 'm&h_litreview_journals.xlsx' is the full list of journals from the search/review with number of articles and publication years. 
