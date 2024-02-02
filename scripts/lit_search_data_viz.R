@@ -4,7 +4,7 @@
 library(ggplot2)
 library(ggpubr)
 
-#manually input the ICC values from the lit search spreadsheet 
+#manually input the ICC values from the lit search spreadsheet (yeah, not a great practice, I get it)
 icc_vals = c(0.62,0.48,0.52,0.55,0.36,0.33,0.47,0.17,0.25,0.44,0.12,
              0.24,0.27,0.32,0.38,0.22,0.56,0.49,0.4,0.01,0.13,0.22,0.23,
              0.39,0.74,0.8,0.27,0.5,0.58,0.66,0.62,0.34,0.11,0.29,0.65,
@@ -16,8 +16,8 @@ icc_df = data.frame(icc_vals)
 
 #make the plot
 icc_plot = ggplot(icc_df, aes(x=icc_vals)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "ICC") + ggtitle("Distribution of ICC values")
+  geom_histogram(fill = 'lightgrey', color = 'black') + theme_classic() +
+  labs(y = "Count", x = "ICC") + ggtitle("Distribution of ICC values")
 
 #manually input the n (Level-1) sample size values
 #note that there are two big outliers that we'll probably want to remove (~3935, ~906)
@@ -32,14 +32,14 @@ n_vals = c(3,15,7,3,66.7,19.5882352941176,2.33333333333333,49.6071428571429,
 n_df = data.frame(n_vals)
 
 ggplot(n_df, aes(x=n_vals)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "Average n") + ggtitle("Distribution of average Level-1 (n) sample sizes")
+  geom_histogram(fill = 'lightgrey', color = 'black') + theme_classic() +
+  labs(y = "Count", x = "Average n") + ggtitle("Distribution of average Level-1 (n) sample sizes")
 
 n_df_no_out = data.frame(n_vals = n_vals[n_vals < 900])
 
 n_no_out_plot = ggplot(n_df_no_out, aes(x=n_vals)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "Average n") + ggtitle("Distribution of average Level-1 (n) sample sizes", subtitle = "Excluding outliers")
+  geom_histogram(fill = 'lightgrey', color = 'black') + theme_classic() +
+  labs(y = "Count", x = "Average n") + ggtitle("Distribution of average Level-1 (n) sample sizes", subtitle = "Excluding outliers")
 
 N_vals = c(114,190,70,419,447,110,17,102,84,77,164,130,20,
            58,68,92,87,84,146,7,1150,114,33,40,102,3,72,78,
@@ -54,8 +54,8 @@ ggplot(N_df, aes(x=N_vals)) +
 N_df_no_out = data.frame(N_vals = N_vals[N_vals < 1100])
 
 N_no_out_plot = ggplot(N_df_no_out, aes(x=N_vals)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "N") + ggtitle("Distribution of Level-2 (N) sample sizes", subtitle = "Excluding outliers")
+  geom_histogram(fill = 'lightgrey', color = 'black') + theme_classic() +
+  labs(y = "Count", x = "N") + ggtitle("Distribution of Level-2 (N) sample sizes", subtitle = "Excluding outliers")
 
 
 #arrange and save (figure 1)
@@ -70,8 +70,8 @@ l1_slopes = c(3,6,1,2,2,16,8,3,3,4,5,2,3,3,5,1,1,3,1,3,1,4,3,2,5,3,2,6,2,8,11,
 l1_slopes_df = data.frame(l1_slopes)
 
 l1_slopes_plot = ggplot(l1_slopes_df, aes(x=l1_slopes)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic()+
-  labs(y = "Density", x = "Num. Level-1 slopes") + ggtitle("Distribution of num. Level-1 slopes")
+  geom_histogram(fill = 'lightgrey', color = 'black', binwidth=1) + theme_classic() +
+  labs(y = "Count", x = "Num. Level-1 slopes") + ggtitle("Distribution of num. Level-1 slopes")
 
 l2_slopes = c(1,9,1,2,10,12,1,4,1,2,3,5,5,5,8,1,5,7,8,0,	
               2,12,4,3,4,1,3,9,6,1,2,0,1,1,2,5,4,0,2,1,3,
@@ -80,8 +80,8 @@ l2_slopes = c(1,9,1,2,10,12,1,4,1,2,3,5,5,5,8,1,5,7,8,0,
 l2_slopes_df = data.frame(l2_slopes)
 
 l2_slopes_plot = ggplot(l2_slopes_df, aes(x=l2_slopes)) +
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic()+
-  labs(y = "Density", x = "Num. Level-2 slopes") + ggtitle("Distribution of num. Level-2 slopes")
+  geom_histogram(fill = 'lightgrey', color = 'black', binwidth=1) + theme_classic() +
+  labs(y = "Count", x = "Num. Level-2 slopes") + ggtitle("Distribution of num. Level-2 slopes")
 
 cross_lev_int = c(3,0,0,0,7,1,0,0,3,4,6,0,1,0,0,0,0,2,3,0,0,
                   11,0,0,0,1,1,2,0,0,2,0,0,0,1,2,0,0,0,3,1)
@@ -89,15 +89,15 @@ cross_lev_int = c(3,0,0,0,7,1,0,0,3,4,6,0,1,0,0,0,0,2,3,0,0,
 cross_lev_int_df = data.frame(cross_lev_int)
 
 cross_lev_int_plot = ggplot(cross_lev_int_df, aes(x=cross_lev_int)) +
-  geom_density(fill = "lightgrey") + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "Num. cross-level interactions") + ggtitle("Distribution of num. cross-level interactions")
+  geom_histogram(fill = 'lightgrey', color = 'black', binwidth = .75) + theme_classic() +
+  labs(y = "Count", x = "Num. cross-level interactions") + ggtitle("Distribution of num. cross-level interactions")
 
 n_rfx = c(1,2,2,1,4,3,4,1,1,1,3,3,1,1,2,3,1,2,1,1,1,2,2,1,1,2,1,2)
 n_rfx_df = data.frame(n_rfx)
 
 n_rfx_plot = ggplot(n_rfx_df, aes(x=n_rfx)) +
-  geom_density(fill = "lightgrey") + scale_color_grey() + theme_classic() +
-  labs(y = "Density", x = "Num. random effects") + ggtitle("Distribution of num. random effects")
+  geom_histogram(fill = 'lightgrey', color = 'black', binwidth = 1) + theme_classic() + #could do .5 for bw if you don't want bars touching
+  labs(y = "Count", x = "Num. random effects") + ggtitle("Distribution of num. random effects")
 
 #arrange and save (figure 2)
 ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure2.png",

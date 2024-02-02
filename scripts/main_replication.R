@@ -22,7 +22,7 @@ studyPath = file.path("C:", "Users", "Joao Guassi Moreira", "Documents", "mh2005
 scriptPath = file.path(sprintf("%s", studyPath), "funcs") #path to helper funcs
 file.sources = Sys.glob(file.path(sprintf("%s", scriptPath), "*.R")) #Construct paths to helper funcs, save in vector
 invisible(sapply(file.sources,FUN=source)) #use sapply to source each file path in the helper func vector
-datPath = file.path(sprintf("%s", studyPath), "data") #path where we'll eventually save our data
+datPath = file.path(sprintf("%s", studyPath), "data", "replication") #path where we'll eventually save our data
 vcov.default = function(object,...) object$vcov #temp
 
 #########
