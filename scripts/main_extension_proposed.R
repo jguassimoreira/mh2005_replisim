@@ -3,7 +3,7 @@
 ########### JF Guassi Moreira (jguassimoreira[at]ucla[dot]edu) #########
 ######################### Winter/Spring 2024 ###########################
 
-library(mlmpower)
+library(mlmpower) #would prefer to call this like a pythong library but it's much easier to load up front here
 
 #########
 ## Import helper functions, set path to data
@@ -133,15 +133,17 @@ mh <- (
 
 n_within = 50
 n_between = 100
-ndata = 1
+ndata = 1 #don't need -- check the don't needs work with more complex model configurations
 
-lvls <- vapply(mh$predictors, levels, numeric(1L))
+lvls <- vapply(mh$predictors, levels, numeric(1L)) #don't need
 
+#don't need
 timevar_l1 <- unlist(lapply(
   mh$predictors[lvls == 1],  # Subset level-1
   \(.)  'mp_timevar' %in% class(.)  # Select timevar
 ))
 
+#don't need
 if (TRUE %in% timevar_l1) {
   len <- length(mh$predictors[lvls == 1][[which(timevar_l1)]]$values)
   if (missing(n_within)) {
@@ -154,6 +156,7 @@ if (TRUE %in% timevar_l1) {
   }
 }
 
+#don't need
 if (ndata > 1) {
   return(
     lapply(seq_len(ndata), \(.) {
@@ -162,14 +165,17 @@ if (ndata > 1) {
   )
 }
 
+#don't need
 binary_l2 <- sapply(
   # Subset level-2
   mh$predictors[lvls == 2],  # Subset level-2
   \(.)  'mp_binary' %in% class(.)   # Select binary
 )
 
+#need
 p = make_parameters(mh)
 
+#need
 N <- n_within * n_between # Total sample size
 l1 <- length(p$mean_X)
 l2 <- length(p$mean_Z)
@@ -191,6 +197,8 @@ inter <- do.call('cbind', apply(
 
 # Create predictors matrix
 X <- cbind(1, X_w, inter, X_b)
+
+#TO DO -- HERE IS WHERE WE WANT TO ADD IN THE IMBALANCE; I.E., SIMULATE DATA IN A WAY THAT REFLECTS EACH CASE HAS A VALUE AND THEN 'DELETE' SOME RANDOMLY TO INTRODUCE IMBALANCE
 
 # Generate level-1 residuals
 e_ij <- rnorm(N, 0, sqrt(p$var_e))
