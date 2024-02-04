@@ -8,7 +8,7 @@ library(mlmpower)
 #########
 ## Import helper functions, set path to data
 #########
-studyPath = file.path("Users", "jguassimoreira", "Documents", "mh2005_replisim") #declare the path to the study
+studyPath = file.path("/Users", "jguassimoreira", "Documents", "mh2005_replisim") #declare the path to the study
 scriptPath = file.path(sprintf("%s", studyPath), "funcs") #path to helper funcs
 file.sources = Sys.glob(file.path(sprintf("%s", scriptPath), "*.R")) #Construct paths to helper funcs, save in vector
 invisible(sapply(file.sources,FUN=source)) #use sapply to source each file path in the helper func vector
@@ -24,9 +24,78 @@ vcov.default = function(object,...) object$vcov #temp
 icc_conds = c(0.1, 0.2, 0.3, 0.4) #the ICC levels - 0.4 is an extension
 ngroup_conds = c(30, 50, 100) #L2 sample size levels (using diff var name to differentiate from function vars)
 groupsize_conds = c(5, 30, 50) #L1 sample size levels (same note re naming; this naming is consistent w M&H paper)
-imbalance_conds = c(1, 1.5, 2, 2.5) #Imbalance between largest and smallest group sizes (extension)
-sim_conds = expand.grid(icc_conds, ngroup_conds, groupsize_conds); names(sim_conds) = c('icc', 'ngroups', 'groupsize') #create dataframe with all conditions
+imbalance_conds = c(1, 1.5, 2, 2.5) #imbalance between largest and smallest group sizes (extension)
+rfx_corr_conds = c(-.6, -.3, 0, .3, .6) #correlation between random slope and intercepts (extension)
+mod_conds = c(1, 2, 3) #new model conditions; 1 is original, others add m additional L1 rfx slopes and cross-lev ints
+sim_conds = expand.grid(icc_conds, #create dataframe with all conditions
+                        ngroup_conds,
+                        groupsize_conds,
+                        imbalance_conds,
+                        rfx_corr_conds,
+                        mod_conds) 
+names(sim_conds) = c('icc', 'ngroups', 'groupsize', 'imbalance', 'rfx_corr', 'mod') #add column names
+sim_conds[sim_conds$mod > 1, 'rfx_corr'] = 0 #set rfx_corr to zero for cells that have more than 1 L1 slope
+#the step above ends up creating a bunch of duplicate conditions...
+sim_conds = dplyr::distinct(sim_conds) #...and this line gets rid of them
 
+
+#########
+## Create list of mlmpower objects
+#########
+
+#coefficient values will be set, and data will be generated, differently from M&H 2005
+#first, coefficients will be generated as a function of the percent variance explained by L1, L2 and cross-level
+#interactions (Rights & Sterba, 2019). Data will then be generated as specified by Enders et al., 2023, using some of
+#the mlmpower package's functionalities. 
+
+#this part creates mlm power object for each condition in the simulation, puts them in a list, and saves them
+#I'm grouping model objects into three lists, each based on the propotion variance explained by the predictors:
+#high (Level-1 - 0.095, Level-2 - 0.095, cross-level - 0.095) 
+#mid (Level-1 - 0.065, Level-2 - 0.065, cross-level - 0.025)
+#low (Level-1 - 0.035, Level-2 - 0.035, cross-level - 0.01)
+#the high grouping corresponds to the original M&H sim
+
+#NOTES: for model configurations that have more than 1 within var and cross-level (e.g., mod_conds == 2 or 3), (i) raneff 
+#cor is set to zero for simplicity and efficiency and (ii) the contribution of each var or int to variance explained is equal
+
+#high variance explained
+model_objects_high_var_exp = lapply(1:dim(sim_conds)[1],
+                                    FUN = function(x) {make_mlmpwr_objects(mod = sim_conds[x,'mod'], #model configuration
+                                                                           sim_icc = sim_conds[x,'icc'], #Y var ICC
+                                                                           w_r2 = 0.095, #var explained by within var(s)
+                                                                           b_r2 = 0.095, #var explained by btwn var(s)
+                                                                           cl_r2 = 0.095, #var explained by cross-lev int(s)
+                                                                           raneff_cor = sim_conds[x,'rfx_corr'])}) #correlation btwn random slope & int
+
+#mid variance explained
+model_objects_mid_var_exp = lapply(1:dim(sim_conds)[1],
+                                    FUN = function(x) {make_mlmpwr_objects(mod = sim_conds[x,'mod'], #model configuration
+                                                                           sim_icc = sim_conds[x,'icc'], #Y var ICC
+                                                                           w_r2 = 0.065, #var explained by within var(s)
+                                                                           b_r2 = 0.065, #var explained by btwn var(s)
+                                                                           cl_r2 = 0.025, #var explained by cross-lev int(s)
+                                                                           raneff_cor = sim_conds[x,'rfx_corr'])}) #correlation btwn random slope & int
+
+#low variance explained
+model_objects_low_var_exp = lapply(1:dim(sim_conds)[1],
+                                    FUN = function(x) {make_mlmpwr_objects(mod = sim_conds[x,'mod'], #model configuration
+                                                                           sim_icc = sim_conds[x,'icc'], #Y var ICC
+                                                                           w_r2 = 0.035, #var explained by within var(s)
+                                                                           b_r2 = 0.035, #var explained by btwn var(s)
+                                                                           cl_r2 = 0.01, #var explained by cross-lev int(s)
+                                                                           raneff_cor = sim_conds[x,'rfx_corr'])}) #correlation btwn random slope & int
+
+#This code runs quickly, so it's not imperative to save these lists to cut down on time, but I think it helps
+#for data sharing
+saveRDS(model_objects_high_var_exp, file = file.path(sprintf("%s", datPath), "model_objects/high_var_exp.rds"))
+saveRDS(model_objects_mid_var_exp, file = file.path(sprintf("%s", datPath), "model_objects/mid_var_exp.rds"))
+saveRDS(model_objects_low_var_exp, file = file.path(sprintf("%s", datPath), "model_objects/low_var_exp.rds"))
+
+#########
+## Run simulation
+#########
+
+#Note that unlike the replication of the original ('main_replication.R'), 
 
 example1 <- (
   effect_size(

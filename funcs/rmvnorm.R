@@ -4,6 +4,7 @@
 rmvnorm <- function(n, mu, Sigma) {
   p <- NCOL(Sigma)
   if (p == 0) return(matrix(0, n, 0))
+  #add desired covariance structure with square factorization method (consistent with MASS package)
   (matrix(mu, nrow = n, ncol = p, byrow = T)
     + matrix(rnorm(p * n), ncol = p)
     %*% with(

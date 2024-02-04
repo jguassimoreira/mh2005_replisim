@@ -1,7 +1,7 @@
 ###########################################################
 ## function to run MLM simulations according to M&H 2005 ##
 
-#intputs: N_l2 - level 2 sample size
+#inputs: N_l2 - level 2 sample size
 #         n_l1 - level 1 sample size
 #         icc - intraclass coefficient
 #         sigma2 - level 1 error variance (analagous to MSE in OLS regression)
