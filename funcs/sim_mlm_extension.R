@@ -72,21 +72,27 @@ sim_mlm_extension = function(N_l2, n_l1, mod_obj, imbalance) {
   names(d) <- c(
     '_id',
     names(p$mean_Y),
-    names(which(vapply(mh$predictors, levels, numeric(1L)) == 1)),
-    names(which(vapply(mh$predictors, levels, numeric(1L)) == 2))
+    names(which(vapply(mod_obj$predictors, levels, numeric(1L)) == 1)),
+    names(which(vapply(mod_obj$predictors, levels, numeric(1L)) == 2))
   )
   
   ### Fit the model
   
   #set the model string
-  
-  test = 'y ~ x1 + z1 + x1*z1 + (1+x1|`_id`)'
-  
-  mod_string = sprintf("y ~ %s + %s",
+  mod_string = sprintf("y ~ %s + (1+%s|`_id`)",
                        paste0(names(mod_obj$l1), "*z1", collapse = " + "),
-                       paste0("1+", names(mod_obj$l1), collapse = "+"))
+                       paste0(names(mod_obj$l1), collapse = "+"))
   
-  mod = lmerTest::lmer(y ~ x + z + x*z + (1+x|subID), data = dat, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4)))
+  #fit the model
+  fit_mod = lmerTest::lmer(mod_string, data = d, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4)))
   
-  lmerTest::lmer(test, data = d, REML = T, lme4::lmerControl(check.conv.singular = lme4::.makeCC(action = "ignore",  tol = 1e-4)))
+  #now it's time to extract the stuff we need and return it in a list
+  
+  varcomp = data.frame(lme4::VarCorr(fit_mod)) #save the variance components
+  conf_ints = compute_wald_ci_varcomp(fit_mod) #get Wald CI for var comps
+ 
+  fx = coef(summary(fit_mod)) #extract estimated fixed effects
+  
+  return(list(fx, varcomp, conf_ints)) #return these items as a list
+  
   }

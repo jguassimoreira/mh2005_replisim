@@ -95,7 +95,32 @@ saveRDS(model_objects_low_var_exp, file = file.path(sprintf("%s", datPath), "mod
 ## Run simulation
 #########
 
-#Note that unlike the replication of the original ('main_replication.R'), 
+#Note that unlike the replication of the original ('main_replication.R'), data generation will occur inside the sim_mlm_extension.R
+#function. Moreover, data are simulated once for every rep, unlike the original sim
+
+#start with the high variance explained models
+
+for (i in 1:dim(sim_conds)[1]) {
+  
+  print(sim_conds[i,])#print current condition
+  outList = list() #initialize empty list to hold output
+  
+  for (r in 1:1) {
+    
+    outList[[r]] = sim_mlm_extension(N_l2 = sim_conds[i,'ngroups'],
+                      n_l1 = sim_conds[i,'groupsize'], 
+                      mod_obj = model_objects_high_var_exp[[r]],
+                      imbalance = sim_conds[i,'imbalance'])
+    names(outList[[r]]) = c('fx_coefs', 'varComp', 'confInt')
+    
+  }
+  
+}
+
+
+
+##NEED TO CHECK CONVERGENCE CODE LMER
+
 
 example1 <- (
   effect_size(
