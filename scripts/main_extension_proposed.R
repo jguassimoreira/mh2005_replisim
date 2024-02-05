@@ -133,7 +133,7 @@ mh <- (
 
 n_within = 50
 n_between = 100
-ndata = 1 #don't need -- check the don't needs work with more complex model configurations
+ndata = 1 #don't need -- check that it works with more complex model configurations
 
 lvls <- vapply(mh$predictors, levels, numeric(1L)) #don't need
 
