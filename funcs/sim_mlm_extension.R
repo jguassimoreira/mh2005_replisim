@@ -93,6 +93,8 @@ sim_mlm_extension = function(N_l2, n_l1, mod_obj, imbalance) {
  
   fx = coef(summary(fit_mod)) #extract estimated fixed effects
   
-  return(list(fx, varcomp, conf_ints)) #return these items as a list
+  conv_flag = is_warning_generated(fit_mod)
+  
+  return(list(fx, varcomp, conf_ints, conv_flag)) #return these items as a list
   
   }

@@ -99,13 +99,13 @@ saveRDS(model_objects_low_var_exp, file = file.path(sprintf("%s", datPath), "mod
 #function. Moreover, data are simulated once for every rep, unlike the original sim
 
 #start with the high variance explained models
-
+start.time <- Sys.time()
 for (i in 1:dim(sim_conds)[1]) {
   
   print(sim_conds[i,])#print current condition
   outList = list() #initialize empty list to hold output
   
-  for (r in 1:1) {
+  for (r in 1:10) {
     
     outList[[r]] = sim_mlm_extension(N_l2 = sim_conds[i,'ngroups'],
                       n_l1 = sim_conds[i,'groupsize'], 
@@ -116,45 +116,12 @@ for (i in 1:dim(sim_conds)[1]) {
   }
   
 }
+end.time <- Sys.time()
+time.taken <- round(end.time - start.time,2)
+time.taken
 
 
-
-##NEED TO CHECK CONVERGENCE CODE LMER
-
-
-example1 <- (
-  effect_size(
-    icc = c(.10,.25),
-    within = .065,
-    between = .065,
-    product = .01,
-    random_slope = .03
-  )
-  + outcome('y', mean = 50, sd = 10)
-  + within_predictor('x1', icc = 0, weight = .80)
-  + within_predictor('x2', weight = .20)
-  + between_predictor('z1', weight = .80)
-  + between_predictor('z2', weight = .20)
-  + product('x1','z1', weight = 1)
-  + random_slope('x1', weight = 1)
-)
-
-
-mh <- (
-  effect_size(
-    icc = 0.1,
-    within = .095,
-    between = .095,
-    product = .095,
-    random_slope = .1
-  )
-  + outcome('y', mean = 1, sd = .95)
-  + within_predictor('x1', icc = 0)
-  + between_predictor('z1')
-  + product('x1','z1', weight = 1)
-  + random_slope('x1', weight = 1)
-  + correlations(randeff = 0)
-)
+### TEMP STUFF BELOW THAT I NEED TO REMOVE LATER
 
 n_within = 50
 n_between = 100
