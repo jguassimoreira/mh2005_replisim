@@ -9,15 +9,16 @@
 
 analyze_sim = function(simList, param_2_summarize, conds) {
   
+  ## First we're going to start with coverage
   
-  icc_conds = lapply(1:length(conds), function(x) ifelse(strsplit(strsplit(conds[x], '/')[[1]][7], "_")[[1]][1] == 'icc1', 0.1,
-                                                         ifelse(strsplit(strsplit(conds[x], '/')[[1]][7], "_")[[1]][1] == 'icc2', 0.2, 0.3)))
+  #extract icc conditions
+  icc_conds = lapply(conds, function(x) parse_conds(x)[[1]])
   
   #extract coverage outcomes for each replication across all conditions
-  sim_datasets = lapply(1:length(conds), function(x) cbind(summarize_sim(simList[[x]], param_2_summarize, icc_conds[[x]])[[3]], 
-                                                                   rep(strsplit(strsplit(conds[x], '/')[[1]][7], "_")[[1]][1], 1000), #yep
-                                                                   rep(strsplit(strsplit(conds[x], '/')[[1]][7], "_")[[1]][2], 1000),
-                                                                   rep(strsplit(strsplit(conds[x], '/')[[1]][7], "_")[[1]][3], 1000)))
+  sim_datasets = lapply(1:length(conds), function(x) cbind(summarize_sim(simList[[x]], param_2_summarize, icc_conds[[x]])[[3]],
+                                                                   icc_conds[[x]], 
+                                                                   parse_conds(conds[x])[[2]],
+                                                                   parse_conds(conds[x])[[3]]))
   
   #since output of lapply is a list, bind these together into 1 big dataframe
   sim_datasets = as.data.frame(do.call(rbind, sim_datasets))
@@ -46,9 +47,12 @@ analyze_sim = function(simList, param_2_summarize, conds) {
   #wald tests of the three factors
   
   #first the models with only 1 factor entered
-  waldicc = wald.test(b = coef(logitmodel_icc), Sigma = vcov(logitmodel_icc), Terms = 2)
-  waldngrps = wald.test(b = coef(logitmodel_ngrps), Sigma = vcov(logitmodel_ngrps), Terms = 2)
-  waldgrpsize = wald.test(b = coef(logitmodel_grpsize), Sigma = vcov(logitmodel_grpsize), Terms = 2)
+  #waldicc = wald.test(b = coef(logitmodel_icc), Sigma = vcov(logitmodel_icc), Terms = 2:3)
+  #waldngrps = wald.test(b = coef(logitmodel_ngrps), Sigma = vcov(logitmodel_ngrps), Terms = 2:3)
+  #waldgrpsize = wald.test(b = coef(logitmodel_grpsize), Sigma = vcov(logitmodel_grpsize), Terms = 2:3)
+  waldicc = anova(logitmodel_icc, test = "Chisq")
+  waldngrps = anova(logitmodel_ngrps, test = "Chisq")
+  waldgrpsize = anova(logitmodel_grpsize, test = "Chisq")
   
   #next the models with all the factors entered simultaneously
   waldicc_all = wald.test(b = coef(logitmodel_all), Sigma = vcov(logitmodel_all), Terms = 2:3)
@@ -61,11 +65,11 @@ analyze_sim = function(simList, param_2_summarize, conds) {
   waldngrps_grpsize = wald.test(b = coef(logitmodel_interaction), Sigma = vcov(logitmodel_interaction), Terms = 16:19)
   
   #aggregate mean coverages broken down by the three factors, and then compute aggregate mean coverages for the fully crossed design (i.e., for each cell)
-  agg_icc = aggregate(sim_datasets$coverage, by = list(sim_datasets$icc), FUN = mean)
-  agg_ngrps = aggregate(sim_datasets$coverage, by = list(sim_datasets$ngrps), FUN = mean)
-  agg_grpsize = aggregate(sim_datasets$coverage, by = list(sim_datasets$grpsize), FUN = mean)
+  agg_icc = aggregate(sim_datasets$coverage, by = list(sim_datasets$icc), FUN = mean, na.rm = T)
+  agg_ngrps = aggregate(sim_datasets$coverage, by = list(sim_datasets$ngrps), FUN = mean, na.rm = T)
+  agg_grpsize = aggregate(sim_datasets$coverage, by = list(sim_datasets$grpsize), FUN = mean, na.rm = T)
   
-  agg_crossed = aggregate(sim_datasets$coverage, by = list(sim_datasets$icc, sim_datasets$ngrps, sim_datasets$grpsize), FUN = mean)
+  agg_crossed = aggregate(sim_datasets$coverage, by = list(sim_datasets$icc, sim_datasets$ngrps, sim_datasets$grpsize), FUN = mean, na.rm = T)
   
   #put outputs in lists, nest into a final list, return
   logitList = list(logitmodel_all, logitmodel_icc, logitmodel_ngrps, logitmodel_grpsize, logitmodel_interaction)
@@ -73,7 +77,21 @@ analyze_sim = function(simList, param_2_summarize, conds) {
   names(waldList) = c("icc", 'ngrps', 'grpsize', "icc_all", 'ngrps_all', 'grpsize_all', 'icc_ngrps', 'icc_grpsize', 'ngrps_grpsize')
   aggList = list(agg_icc, agg_ngrps, agg_grpsize, agg_crossed); names(aggList) = c('icc', 'ngrps', 'grpsize', 'crossed')
   
-  outList = list(logitList, waldList, aggList); names(outList) = c('logitmodel', 'wald_tests', 'agg_coverage')
+  ##Now we'll move on to percent bias
+  sim_bias = lapply(1:length(conds), function(x) cbind(summarize_sim(simList[[x]], param_2_summarize, icc_conds[[x]])[[1]],
+                                                       icc_conds[[x]], 
+                                                       parse_conds(conds[x])[[2]],
+                                                       parse_conds(conds[x])[[3]]))
+  sim_bias = data.frame(do.call('rbind', sim_bias))
+  names(sim_bias) = c("bias", "icc", "ngrps", "grpsize")
+  sim_bias$bias = as.numeric(sim_bias$bias)
+  icc_bias = aggregate(bias ~ icc, data = sim_bias[,c('bias', 'icc')], mean, na.rm = T); names(icc_bias) = c('cond_lev', 'bias')
+  ngrps_bias = aggregate(bias ~ ngrps, data = sim_bias[,c('bias', 'ngrps')], mean, na.rm = T); names(ngrps_bias) = c('cond_lev', 'bias')
+  grpsize_bias = aggregate(bias ~ grpsize, data = sim_bias[,c('bias', 'grpsize')], mean, na.rm = T); names(grpsize_bias) = c('cond_lev', 'bias')
+  
+  bias_marg = rbind(icc_bias, ngrps_bias, grpsize_bias)
+  
+  outList = list(bias_marg, logitList, waldList, aggList); names(outList) = c('bias', 'logitmodel', 'wald_tests', 'agg_coverage')
   
   return(outList)
   

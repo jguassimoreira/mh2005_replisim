@@ -17,7 +17,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     sims = sapply(simList, function(x) x[[2]][4,4]) #extract the simulated values from the simList (note we're extracting the variances)
     
-    bias = 100 * sims/1; pct_bias = bias - 100
+    bias = 100 * sims/1; pct_bias = bias - 100 #FLAGGED HERE, should this be abs()?
     mean_pct_bias = mean(pct_bias) #compute mean percent bias
     
     hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
@@ -28,7 +28,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(1, ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
   } else if (param_2_summarize == 'intercept') {
     
@@ -48,7 +48,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(1, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
   } else if (param_2_summarize == 'b_x') {
     
@@ -68,7 +68,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
   } else if (param_2_summarize == 'b_z') {
     
@@ -88,7 +88,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
   } else if (param_2_summarize == 'b_xz') {
     
@@ -108,7 +108,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
     
   } else if (param_2_summarize == 'int_var') {
@@ -127,7 +127,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(calc_var_comp_legacy(icc, 1)[1], ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
     
   } else if (param_2_summarize == 'x_var') {
@@ -146,7 +146,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     coverage = sapply(1:1000, function(x) dplyr::between(calc_var_comp_legacy(icc, 1)[1], ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
     
-    pct_noncoverage = 1 - mean(coverage) #calculate percent noncoverage
+    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
     
   }
   
