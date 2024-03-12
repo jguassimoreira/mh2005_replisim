@@ -54,7 +54,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     sims = sapply(simList, function(x) x[[1]][2,1]) #extract the simulated values from the simList
     
-    bias = 100 * sims/.25; pct_bias = bias - 100
+    bias = 100 * sims/.3; pct_bias = bias - 100
     mean_pct_bias = mean(pct_bias) #compute mean percent bias
     
     hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
@@ -74,7 +74,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     sims = sapply(simList, function(x) x[[1]][3,1]) #extract the simulated values from the simList
     
-    bias = 100 * sims/.25; pct_bias = bias - 100
+    bias = 100 * sims/.3; pct_bias = bias - 100
     mean_pct_bias = mean(pct_bias) #compute mean percent bias
     
     hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
@@ -94,7 +94,7 @@ summarize_sim = function(simList, param_2_summarize, icc) {
     
     sims = sapply(simList, function(x) x[[1]][4,1]) #extract the simulated values from the simList
     
-    bias = 100 * sims/.25; pct_bias = bias - 100
+    bias = 100 * sims/.3; pct_bias = bias - 100
     mean_pct_bias = mean(pct_bias) #compute mean percent bias
     
     hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
