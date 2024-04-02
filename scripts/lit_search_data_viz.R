@@ -31,9 +31,13 @@ n_vals = c(3,15,7,3,66.7,19.5882352941176,2.33333333333333,49.6071428571429,
 
 n_df = data.frame(n_vals)
 
-ggplot(n_df, aes(x=n_vals)) + 
+n_plot_log = ggplot(n_df, aes(x=log(n_vals))) + 
   geom_histogram(fill = 'lightgrey', color = 'black') + theme_classic() +
-  labs(y = "Count", x = "Average n") + ggtitle("Distribution of average Level-1 (n) sample sizes")
+  labs(y = "Count", x = "Average n (log)") + ggtitle("Distribution of average Level-1 (n) sample sizes") + 
+  scale_x_continuous(
+    breaks = c(2, 4, 6, 8), # Specify the breaks at the log-transformed values
+    labels = round(exp(c(2, 4, 6, 8))) # Specify the labels at the non-log-transformed values
+  )
 
 n_df_no_out = data.frame(n_vals = n_vals[n_vals < 900])
 
@@ -48,8 +52,13 @@ N_vals = c(114,190,70,419,447,110,17,102,84,77,164,130,20,
 
 N_df = data.frame(N_vals)
 
-ggplot(N_df, aes(x=N_vals)) + 
-  geom_density(fill = 'lightgrey') + scale_color_grey() + theme_classic()
+N_plot_log = ggplot(N_df, aes(x=log(N_vals))) + 
+  geom_histogram(fill = 'lightgrey', color = "black") + scale_color_grey() + theme_classic() +
+  labs(y = "Count", x = "N (log)") + ggtitle("Distribution of Level-2 (N) sample sizes")+ 
+  scale_x_continuous(
+    breaks = c(3, 6, 9), # Specify the breaks at the log-transformed values
+    labels = round(exp(c(3, 6, 9))) # Specify the labels at the non-log-transformed values
+  )
 
 N_df_no_out = data.frame(N_vals = N_vals[N_vals < 1100])
 
@@ -59,9 +68,14 @@ N_no_out_plot = ggplot(N_df_no_out, aes(x=N_vals)) +
 
 
 #arrange and save (figure 1)
+#ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure1.png",
+#       ggarrange(icc_plot, n_no_out_plot, N_no_out_plot, ncol = 3),
+#       width = 15, height = 5, dpi = 900)
+
 ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure1.png",
-       ggarrange(icc_plot, n_no_out_plot, N_no_out_plot, ncol = 3),
+       ggarrange(icc_plot, n_plot_log, N_plot_log, ncol = 3),
        width = 15, height = 5, dpi = 900)
+
 
 
 l1_slopes = c(3,6,1,2,2,16,8,3,3,4,5,2,3,3,5,1,1,3,1,3,1,4,3,2,5,3,2,6,2,8,11,

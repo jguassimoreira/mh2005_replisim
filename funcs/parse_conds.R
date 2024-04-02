@@ -18,6 +18,7 @@ parse_conds = function(path) {
   #extract other labels
   n_lab = unlist(strsplit(rds_file_name, "_"))[2]
   N_lab = unlist(strsplit(rds_file_name, "_"))[3]
+  N_lab = strsplit(N_lab, ".RDS")[[1]]
   
   return(list(icc_val, n_lab, N_lab))
   

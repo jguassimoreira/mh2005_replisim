@@ -13,147 +13,95 @@
 
 summarize_sim = function(simList, param_2_summarize, icc) {
   
-  if (param_2_summarize == "sigma2") { #start with sigma2
+  true_params = list('sigma2' = 0.5, 'intercept' = 1, 'b_x' = 0.3,
+                     'b_z' = 0.3, 'b_xz' = 0.3, 'int_var' = calc_var_comp_legacy(icc, .5)[1], 
+                     'x_var' = calc_var_comp_legacy(icc, .5)[1])
+  
+  if (param_2_summarize == "sigma2") {
     
-    sims = sapply(simList, function(x) x[[2]][4,4]) #extract the simulated values from the simList (note we're extracting the variances)
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$varComp[x$varComp$grp == 'Residual', 'vcov'])
     
-    bias = 100 * sims/1; pct_bias = bias - 100 #FLAGGED HERE, should this be abs()?
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    ci_mat = sapply(simList, function(x) x[[3]][4,]) #extract matrix with CIs for sigma2
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(1, ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+    #get the confidence interval values
+    #confidence intervals for variances are on SD scale, need to square to put back into variance
+    ci_mat = sapply(simList, function(x) x$confInt['.sigma',]^2)
     
   } else if (param_2_summarize == 'intercept') {
     
-    sims = sapply(simList, function(x) x[[1]][1,1]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$fx_coefs['(Intercept)', 'Estimate'])
     
-    bias = 100 * sims/1; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    se = sapply(simList, function(x) x[[1]][1,2]) #extract SE for the intercept
-    
-    ci_mat = matrix(data = c(sims - (2*se), sims + (2*se)), nrow = 2, ncol = 1000, byrow = T) #create CI matrix based on SE and sim values
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(1, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+    #get the confidence interval values
+    ci_mat = sapply(simList, function(x) x$confInt['(Intercept)',])
     
   } else if (param_2_summarize == 'b_x') {
     
-    sims = sapply(simList, function(x) x[[1]][2,1]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$fx_coefs['x', 'Estimate'])
     
-    bias = 100 * sims/.3; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    se = sapply(simList, function(x) x[[1]][2,2]) #extract SE for the intercept
-    
-    ci_mat = matrix(data = c(sims - (2*se), sims + (2*se)), nrow = 2, ncol = 1000, byrow = T) #create CI matrix based on SE and sim values
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+    #get the confidence interval values
+    ci_mat = sapply(simList, function(x) x$confInt['x',])
     
   } else if (param_2_summarize == 'b_z') {
     
-    sims = sapply(simList, function(x) x[[1]][3,1]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$fx_coefs['z', 'Estimate'])
     
-    bias = 100 * sims/.3; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    se = sapply(simList, function(x) x[[1]][3,2]) #extract SE for the intercept
-    
-    ci_mat = matrix(data = c(sims - (2*se), sims + (2*se)), nrow = 2, ncol = 1000, byrow = T) #create CI matrix based on SE and sim values
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+    #get the confidence interval values
+    ci_mat = sapply(simList, function(x) x$confInt['z',])
     
   } else if (param_2_summarize == 'b_xz') {
     
-    sims = sapply(simList, function(x) x[[1]][4,1]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$fx_coefs['x:z', 'Estimate'])
     
-    bias = 100 * sims/.3; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    se = sapply(simList, function(x) x[[1]][4,2]) #extract SE for the intercept
-    
-    ci_mat = matrix(data = c(sims - (2*se), sims + (2*se)), nrow = 2, ncol = 1000, byrow = T) #create CI matrix based on SE and sim values
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(0.3, ci_mat[1,x], ci_mat[2,x])) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
-    
+    #get the confidence interval values
+    ci_mat = sapply(simList, function(x) x$confInt['x:z',])
     
   } else if (param_2_summarize == 'int_var') {
     
-    sims = sapply(simList, function(x) x[[2]][1,4]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$varComp[x$varComp$var1 == '(Intercept)' & is.na(x$varComp$var2), 'vcov'][1])
     
-    bias = 100 * sims/calc_var_comp_legacy(icc, 1)[1]; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    ci_mat = sapply(simList, function(x) x[[3]][1,]) #extract CIs 
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(calc_var_comp_legacy(icc, 1)[1], ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
-    
+    #get the confidence interval values
+    #confidence intervals for variances are on SD scale, need to square to put back into variance
+    ci_mat = sapply(simList, function(x) x$confInt['.sig01',]^2)
     
   } else if (param_2_summarize == 'x_var') {
     
-    sims = sapply(simList, function(x) x[[2]][2,4]) #extract the simulated values from the simList
+    #extract the estimated values fit to the model from the simulated dataset
+    sims = sapply(simList, function(x) x$varComp[x$varComp$var1 == 'x' & is.na(x$varComp$var2), 'vcov'][1])
     
-    bias = 100 * sims/calc_var_comp_legacy(icc, 1)[1]; pct_bias = bias - 100
-    mean_pct_bias = mean(pct_bias) #compute mean percent bias
-    
-    hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
-      geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
-      geom_density(alpha = 0.2, fill = "green") #create histogram
-    
-    
-    ci_mat = sapply(simList, function(x) x[[3]][3,]) #extract CIs 
-    
-    coverage = sapply(1:1000, function(x) dplyr::between(calc_var_comp_legacy(icc, 1)[1], ci_mat[1,x]^2, ci_mat[2,x]^2)) #check whether each sim is covered
-    
-    pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+    #get the confidence interval values
+    #confidence intervals for variances are on SD scale, need to square to put back into variance
+    ci_mat = sapply(simList, function(x) x$confInt['.sig03',]^2)
     
   }
   
-  outList = list(mean_pct_bias, hist, coverage, pct_noncoverage)
-  names(outList) = c('mean_pct_bias', 'hist', 'coverage', 'pct_noncoverage')
+  #compute percent bias
+  bias = 100 * sims/true_params[[param_2_summarize]]; pct_bias = bias - 100 
+  #get mean bias
+  mean_pct_bias = mean(pct_bias) 
   
-  return(outList) #return the tau matrix
+  #create histogram
+  hist = ggplot(as.data.frame(pct_bias), aes(x=pct_bias)) +
+    geom_histogram(aes(y=..density..), binwidth=1) + geom_vline(aes(xintercept=mean(pct_bias)), color = 'black', linetype="dashed", size = 1.25) +
+    geom_density(alpha = 0.2, fill = "green") 
+  
+  #get coverage values
+  coverage = sapply(1:1000, function(x) dplyr::between(true_params[[param_2_summarize]], ci_mat[1,x], ci_mat[2,x]))
+  
+  #calculate percent non-coverage
+  pct_noncoverage = 1 - mean(coverage, na.rm = T) #calculate percent noncoverage
+  
+  #get non-covergence
+  non_converged = sum(sapply(simList, function(x) x$w))
+  
+  #create list of outputs
+  outList = list(mean_pct_bias, hist, coverage, pct_noncoverage, non_converged)
+  names(outList) = c('mean_pct_bias', 'hist', 'coverage', 'pct_noncoverage', 'non_converged')
+  
+  return(outList) #return the list of summarized quantities
   
 }
   
