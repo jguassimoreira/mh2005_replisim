@@ -269,6 +269,8 @@ replication_interaction_analysis = function(simList, param_2_analyze, conds) {
     
   }
   
+  outList[['data']] = sim_datasets
+  
   #return nested output list with p-values and significance messages
   #goal is to first summarize significance of interactions so user can do follow-up tests on their own
 
