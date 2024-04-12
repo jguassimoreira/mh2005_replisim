@@ -154,10 +154,3 @@ anova(glm(non_coverage ~ icc, data = sim_data_x_var[sim_data_x_var$grpsize == "g
 #test icc at grpsize 50 - not significant
 anova(glm(non_coverage ~ icc, data = sim_data_x_var[sim_data_x_var$grpsize == "grpsize50" & sim_data_x_var$ngrps == "ngrps100",], family = "binomial"), test = "LRT")
 
-df = data.frame(icc = rep(c(0.1, 0.2, 0.3), 3), grpsize = rep(c(5, 30, 50), each = 3), noncoverage = c(.035, .047, .089, .024, .053, .037, .074, .055, .013))
-ggplot(df, aes(x = icc, y = noncoverage, color = as.factor(grpsize))) +
-  geom_line() +
-  geom_point() +
-  scale_color_grey() +  # Use gray scale for the group colors
-  labs(x = "ICC", y = "Non-coverage", color = "Group Size (n)") +
-  theme_minimal()
