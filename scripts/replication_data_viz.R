@@ -86,58 +86,64 @@ rep_dat$icc = dplyr::case_when(rep_dat$icc == "0.1" ~ 0.1,
 u0_mh = ggplot(mh_t4, aes(x = ngrps, y = u0, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 u0_rep = ggplot(rep_dat, aes(x = ngrps, y = u0, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 
 ### u1
 u1_mh = ggplot(mh_t4, aes(x = ngrps, y = u1, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 u1_rep = ggplot(rep_dat, aes(x = ngrps, y = u1, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 
 ### e
 e_mh = ggplot(mh_t4, aes(x = ngrps, y = e, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage", x = "Level-2 Sample Size (N)") +
   scale_y_continuous(limits = c(0, .1175)) +
   theme_test(base_size = 13.5) + theme(legend.position = "none")
 
 e_rep = ggplot(rep_dat, aes(x = ngrps, y = e, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(y = "Non-coverage", x = "Level-2 Sample Size (N)") +
   scale_y_continuous(limits = c(0, .1175)) +
   theme_test(base_size = 13.5) + theme(legend.position = "none")
 
@@ -146,91 +152,99 @@ e_rep = ggplot(rep_dat, aes(x = ngrps, y = e, color = factor(icc)), show.legend 
 int_mh = ggplot(mh_t4, aes(x = ngrps, y = int, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 int_rep = ggplot(rep_dat, aes(x = ngrps, y = int, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 
 ### x
 x_mh = ggplot(mh_t4, aes(x = ngrps, y = x, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 x_rep = ggplot(rep_dat, aes(x = ngrps, y = x, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none") 
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank()) 
 
 
 ### z
 z_mh = ggplot(mh_t4, aes(x = ngrps, y = z, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 z_rep = ggplot(rep_dat, aes(x = ngrps, y = z, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
   labs(x = "Level-2 Sample Size", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
-  theme_test(base_size = 13.5) + theme(legend.position = "none")
+  theme_test(base_size = 13.5) + theme(legend.position = "none", axis.title.x=element_blank())
 
 
 ### xz
 xz_mh = ggplot(mh_t4, aes(x = ngrps, y = xz, color = factor(icc))) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize),), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize),), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(x = "Level-2 Sample Size (N)", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
   theme_test(base_size = 13.5) + theme(legend.position = "none")
 
 xz_rep = ggplot(rep_dat, aes(x = ngrps, y = xz, color = factor(icc)), show.legend = T) +
   geom_line(aes(shape = factor(grpsize)), size = .85) +
   geom_hline(yintercept = .075, linetype = "dashed") +
-  geom_point(aes(shape = factor(grpsize)), size = 2.5) +
+  geom_hline(yintercept = .05, linetype = "dashed") +
+  geom_point(aes(shape = factor(grpsize)), size = 3, alpha = 0.5) +
   scale_color_grey() +  
-  labs(x = "Level-2 Sample Size", y = "Non-coverage") +
+  labs(x = "Level-2 Sample Size (N)", y = "Non-coverage") +
   scale_y_continuous(limits = c(0, .1175)) +
   theme_test(base_size = 13.5) + theme(legend.position = "none") 
 
 
 ##put into a grid, save
-ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure3.png",
+ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure1.png",
        ggarrange(u0_mh, u0_rep,
                  u1_mh, u1_rep,
                  e_mh, e_rep,
                  nrow = 3, ncol = 2),
        width = 7, height = 10, dpi = 900)
 
-ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure4.png",
+ggsave("/Users/jguassimoreira/Documents/mh2005_replisim/plots/figure2.png",
        ggarrange(int_mh, int_rep,
                  x_mh, x_rep,
                  z_mh, z_rep,

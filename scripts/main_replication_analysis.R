@@ -154,3 +154,17 @@ anova(glm(non_coverage ~ icc, data = sim_data_x_var[sim_data_x_var$grpsize == "g
 #test icc at grpsize 50 - not significant
 anova(glm(non_coverage ~ icc, data = sim_data_x_var[sim_data_x_var$grpsize == "grpsize50" & sim_data_x_var$ngrps == "ngrps100",], family = "binomial"), test = "LRT")
 
+#ngrps x grpsize is sig @ ICC3 (p = .002)
+#test grpsize at ngrps 30 - significant
+anova(glm(non_coverage ~ grpsize, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$ngrps == "ngrps30",], family = "binomial"), test = "LRT")
+#test grpsize at ngrps 50 
+anova(glm(non_coverage ~ grpsize, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$ngrps == "ngrps50",], family = "binomial"), test = "LRT")
+#test grpsize at ngrps 100 
+anova(glm(non_coverage ~ grpsize, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$ngrps == "ngrps100",], family = "binomial"), test = "LRT")
+
+#test ngrps at grpsize 5
+anova(glm(non_coverage ~ ngrps, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$grpsize == "grpsize5",], family = "binomial"), test = "LRT")
+#test ngrps at grpsize 30 - not significant
+anova(glm(non_coverage ~ ngrps, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$grpsize == "grpsize30",], family = "binomial"), test = "LRT")
+#test ngrps at grpsize 50 - not significant
+anova(glm(non_coverage ~ ngrps, data = sim_data_x_var[sim_data_x_var$icc == "0.3" & sim_data_x_var$grpsize == "grpsize50",], family = "binomial"), test = "LRT")
