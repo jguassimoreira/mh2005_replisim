@@ -4,7 +4,7 @@
 #inputs: N_l2 - level 2 sample size
 #         n_l1 - level 1 sample size
 #         mod_obj - mlm power model object, used as part of data generation
-#         imbalance - ratio of size between largest and smallest groups. Largest group always has full n_l1 size. 
+#         imbalance - ratio of size between largest and smallest groups. Ideal/average n_l1 size falls in the middle. 
 
 #outputs: Matrix of fixed effect estimates, standard errors, t stats and p-values
 
@@ -20,7 +20,13 @@ sim_mlm_extension = function(N_l2, n_l1, mod_obj, imbalance) {
   
   p = make_parameters(mod_obj) #get model parameters from mlm_power model object
   
-  n_within_imbalanced = ceiling(runif(n_between, n_within/imbalance, n_within)) #sample imbalanced group sizes from uniform dist
+  #lower and upper bounds needed to draw L1 sample sizes from uniform distribution
+  #if imbalance = 1, then lower = upper = n_within
+  #otherwise, upper / lower = imbalance, and (upper - n_within) = (n_within - lower)
+  lower = get_range_imbalance(n_within, imbalance)$lower
+  upper = get_range_imbalance(n_within, imbalance)$lower
+  
+  n_within_imbalanced = round(runif(n_between, lower, upper)) #sample imbalanced group sizes from uniform dist
   
   N = sum(n_within_imbalanced) #Total sample size (was: n_within * n_between)
   l1 = length(p$mean_X) #number of level 1 predictors
